@@ -12,6 +12,8 @@ allowed-tools:
   - Bash(head:*)
   - Bash(tee:*)
   - Bash(git:*)
+  - Bash(sed:*)
+  - Bash(rm:*)
   - Read
 ---
 
@@ -46,6 +48,35 @@ Without this, Gemini may attempt to use tools and produce unexpected results.
 Gemini's `--resume latest` is index-based (not ID-based) and unreliable. For multi-round discussions:
 - **DO NOT** use `--resume`
 - **DO** re-inject the full context from previous rounds into each new prompt
+
+### Robust JSON Parsing (IMPORTANT)
+
+Gemini's `-o json` output is sometimes wrapped in Markdown code blocks. **Always parse output** to extract clean JSON:
+
+```bash
+# Function to extract JSON from potentially wrapped output
+parse_gemini_output() {
+  local input="$1"
+  # Strip markdown code fences if present
+  echo "$input" | sed 's/^```json//; s/^```//; s/```$//' | \
+    # Remove CLI status messages
+    grep -v '^Loaded cached' | \
+    # Extract response field, or return raw if not JSON
+    jq -r '.response // .' 2>/dev/null || echo "$input"
+}
+
+# Usage:
+RAW_OUTPUT=$(gemini -s -m gemini-3-pro-preview -o json "$(cat "$PROMPT_FILE")" 2>&1)
+RESPONSE=$(parse_gemini_output "$RAW_OUTPUT")
+```
+
+**Why this matters:** Without parsing, you may get output like:
+```
+```json
+{"response": "actual content here"}
+```
+```
+Instead of clean JSON.
 
 ## Reference Files
 

@@ -38,6 +38,24 @@ Without this, Gemini may attempt to use tools, browse files, or perform actions 
 
 **Always use `-o json`** for structured, parseable output.
 
+### Not Parsing JSON Output (Fragile)
+
+| Rationalization | Reality | Correct Action |
+|-----------------|---------|----------------|
+| "It's JSON, I can use it directly" | Gemini often wraps JSON in Markdown code blocks | Always parse output |
+| "jq will handle it" | jq fails on ` ```json ... ``` ` wrapped content | Strip code fences first |
+| "I'll just read the raw output" | CLI status messages pollute the output | Filter and parse |
+
+**Always parse Gemini output to handle Markdown wrapping:**
+```bash
+# Wrong - assumes clean JSON
+gemini -s -m gemini-3-pro-preview -o json "prompt" | jq '.response'
+
+# Right - handles wrapped output
+RAW=$(gemini -s -m gemini-3-pro-preview -o json "prompt" 2>&1)
+RESPONSE=$(echo "$RAW" | sed 's/^```json//; s/^```//; s/```$//' | grep -v '^Loaded cached' | jq -r '.response // .' 2>/dev/null || echo "$RAW")
+```
+
 ### Forgetting Sandbox Flag
 
 | Wrong | Right |

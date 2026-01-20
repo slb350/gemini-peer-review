@@ -14,6 +14,8 @@ allowed-tools:
   - Bash(grep:*)
   - Bash(head:*)
   - Bash(tee:*)
+  - Bash(sed:*)
+  - Bash(rm:*)
   - Read
 ---
 
@@ -57,7 +59,35 @@ cat > "$PROMPT_FILE" <<'PROMPT_EOF'
 CRITICAL: Do not use any tools. Output text only.
 PROMPT_EOF
 
-gemini -s -m gemini-3-pro-preview -o json "$(cat "$PROMPT_FILE")"
+OUTPUT_FILE=$(mktemp /tmp/gemini-output-XXXXXX.json)
+gemini -s -m gemini-3-pro-preview -o json "$(cat "$PROMPT_FILE")" > "$OUTPUT_FILE" 2>&1
+
+# Parse JSON (handles Markdown-wrapped output)
+RESPONSE=$(cat "$OUTPUT_FILE" | sed 's/^```json//; s/^```//; s/```$//' | grep -v '^Loaded cached' | jq -r '.response // .' 2>/dev/null || cat "$OUTPUT_FILE")
+
+# Cleanup
+rm -f "$PROMPT_FILE" "$OUTPUT_FILE"
+```
+
+### Robust JSON Parsing
+
+Gemini's `-o json` output is sometimes wrapped in Markdown code blocks. Always parse output to extract clean JSON:
+
+```bash
+# Function to extract JSON from potentially wrapped output
+parse_gemini_output() {
+  local input="$1"
+  # Strip markdown code fences if present
+  echo "$input" | sed 's/^```json//; s/^```//; s/```$//' | \
+    # Remove CLI status messages
+    grep -v '^Loaded cached' | \
+    # Extract response field, or return raw if not JSON
+    jq -r '.response // .' 2>/dev/null || echo "$input"
+}
+
+# Usage:
+RAW_OUTPUT=$(gemini -s -m gemini-3-pro-preview -o json "$(cat "$PROMPT_FILE")" 2>&1)
+RESPONSE=$(parse_gemini_output "$RAW_OUTPUT")
 ```
 
 ### For Code Review (reviewing actual code changes)
