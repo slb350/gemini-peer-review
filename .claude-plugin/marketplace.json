@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "gemini-peer-review",
+  "version": "1.0.0",
+  "description": "Claude Code plugin for AI peer review validation using Google Gemini CLI. Two AI perspectives catch more issues than one.",
+  "owner": {
+    "name": "slb350"
+  },
+  "plugins": [
+    {
+      "name": "gemini-peer-review",
+      "version": "1.0.0",
+      "description": "Peer validation system using Google Gemini CLI. Validates Claude's designs and code reviews through structured discussion before presenting to user.",
+      "author": {
+        "name": "slb350"
+      },
+      "source": "./plugins/gemini-peer-review",
+      "category": "code-quality",
+      "tags": ["peer-review", "code-review", "validation", "gemini", "ai-collaboration"]
+    }
+  ]
+}

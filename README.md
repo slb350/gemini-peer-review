@@ -36,27 +36,23 @@ gemini --version
 
 ### Via Claude Code Plugin Marketplace (Recommended)
 
-```bash
-claude /plugin add github:slb350/gemini-peer-review
+In Claude Code, run:
 ```
+/plugin add slb350/gemini-peer-review
+```
+
+Then select the `gemini-peer-review` plugin when prompted.
 
 ### Manual Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/slb350/gemini-peer-review.git ~/.claude/plugins/gemini-peer-review
+   git clone https://github.com/slb350/gemini-peer-review.git ~/.claude/plugins/marketplaces/gemini-peer-review
    ```
 
-2. Add to your Claude Code settings (`~/.claude/settings.json`):
-   ```json
-   {
-     "plugins": [
-       "~/.claude/plugins/gemini-peer-review"
-     ]
-   }
-   ```
+2. Restart Claude Code or run `/plugin reload`
 
-3. Restart Claude Code or run `/plugin reload`
+3. Add the plugin via `/plugin add` and select from local marketplaces
 
 ## Usage
 
@@ -114,25 +110,30 @@ When Claude and Gemini disagree:
 - **Round 2**: Respond to evidence, attempt synthesis
 - **Escalation**: If unresolved, use Perplexity MCP or WebSearch for external arbitration
 
-## Plugin Structure
+## Repository Structure
 
 ```
 gemini-peer-review/
 ├── .claude-plugin/
-│   └── plugin.json              # Plugin manifest
-├── agents/
-│   └── gemini-peer-reviewer.md  # Core validation agent
-├── commands/
-│   └── gemini-peer-review.md    # /gemini-peer-review command
-├── skills/
-│   └── gemini-peer-review/
-│       ├── SKILL.md             # Main skill reference
-│       ├── discussion-protocol.md
-│       ├── escalation-criteria.md
-│       └── common-mistakes.md
-└── hooks/
-    ├── hooks.json               # Hook configuration
-    └── *.sh                     # Hook scripts
+│   └── marketplace.json         # Marketplace manifest
+├── README.md
+└── plugins/
+    └── gemini-peer-review/
+        ├── .claude-plugin/
+        │   └── plugin.json      # Plugin manifest
+        ├── agents/
+        │   └── gemini-peer-reviewer.md
+        ├── commands/
+        │   └── gemini-peer-review.md
+        ├── skills/
+        │   └── gemini-peer-review/
+        │       ├── SKILL.md
+        │       ├── discussion-protocol.md
+        │       ├── escalation-criteria.md
+        │       └── common-mistakes.md
+        └── hooks/
+            ├── hooks.json
+            └── *.sh
 ```
 
 ## Gemini CLI Specifics
