@@ -34,14 +34,12 @@ gemini --version
 
 ## Installation
 
-### Via Claude Code Plugin Marketplace (Recommended)
+### Via Claude Code (Recommended)
 
-In Claude Code, run:
-```
-/plugin add slb350/gemini-peer-review
-```
-
-Then select the `gemini-peer-review` plugin when prompted.
+1. In Claude Code, run `/plugin add`
+2. Navigate to **Add Marketplace**
+3. Enter the marketplace source: `slb350/gemini-peer-review`
+4. Select the `gemini-peer-review` plugin to install
 
 ### Manual Installation
 
@@ -50,9 +48,8 @@ Then select the `gemini-peer-review` plugin when prompted.
    git clone https://github.com/slb350/gemini-peer-review.git ~/.claude/plugins/marketplaces/gemini-peer-review
    ```
 
-2. Restart Claude Code or run `/plugin reload`
-
-3. Add the plugin via `/plugin add` and select from local marketplaces
+2. In Claude Code, run `/plugin add`
+3. Select `gemini-peer-review` from available plugins
 
 ## Usage
 
